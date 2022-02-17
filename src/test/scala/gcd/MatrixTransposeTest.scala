@@ -12,7 +12,7 @@ object MatrxiTransposeData {
                      Seq(2,4))
 
     val in2x3  = Seq(Seq(1,2,3),
-                     Seq(3,5, 6))
+                     Seq(3,5,6))
     val out3x2 = Seq(Seq(1,3),
                      Seq(2,5),
                      Seq(3,6))
@@ -26,7 +26,7 @@ object MatrxiTransposeData {
                      Seq(6))
 }
 
-class MatMulModelTester extends AnyFlatSpec with ChiselScalatestTester {
+class MatTranposeModelTester extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "MatrixTransposeModel"
 
   it should "Tranpose Matrix of size 2x2" in {
