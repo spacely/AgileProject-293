@@ -10,11 +10,11 @@ import spire.math.extras.{FixedPoint, FixedScale}
 
 // FixedPoint refers to Spire fixed point (scala type)
 // experimental.FixedPoint refers to chisel type
-case class GPSParams(sat_num: Int = 4, width: Int = 8, bp: Int = 5) {
+case class GPSParams(sat_num: Int = 4, width: Int = 8, bp: Int = 4) {
   require(bp >= 1)
   val rows: Int = sat_num
   val cols: Int = 4
-  val spire_bp: Int = 1 << (bp)
+  val spire_bp: Int = 1 << bp
 
   implicit val scale = FixedScale(spire_bp)
 
