@@ -17,26 +17,27 @@ object MatrxiTransposeData {
     val p = GPSParams()
     implicit val scale = p.scale
 
-    val in2x2  = Seq(Seq(FixedPoint(1.0),FixedPoint(2.0)),
-                     Seq(FixedPoint(3.0),FixedPoint(4.0)))
+    val in2x2  = Seq(Seq(FixedPoint(1.5),FixedPoint(2.5)),
+                     Seq(FixedPoint(3.5),FixedPoint(4.5)))
 
-    val out2x2 = Seq(Seq(FixedPoint(1.0),FixedPoint(3.0)),
-                     Seq(FixedPoint(2.0),FixedPoint(4.0)))
+    val out2x2 = Seq(Seq(FixedPoint(1.5),FixedPoint(3.5)),
+                     Seq(FixedPoint(2.5),FixedPoint(4.5)))
 
-    val in2x3  = Seq(Seq(FixedPoint(1.0),FixedPoint(2.0),FixedPoint(3.0)),
-                     Seq(FixedPoint(3.0),FixedPoint(5.0),FixedPoint(6.0)))
+    val in2x3  = Seq(Seq(FixedPoint(1.5),FixedPoint(2.5),FixedPoint(3.0)),
+                     Seq(FixedPoint(3.5),FixedPoint(5.5),FixedPoint(6.0)))
 
-    val out3x2 = Seq(Seq(FixedPoint(1.0),FixedPoint(3.0)),
-                     Seq(FixedPoint(2.0),FixedPoint(5.0)),
-                     Seq(FixedPoint(3.0),FixedPoint(6.0)))
+    val out3x2 = Seq(Seq(FixedPoint(1.5),FixedPoint(3.5)),
+                     Seq(FixedPoint(2.5),FixedPoint(5.5)),
+                     Seq(FixedPoint(3.5),FixedPoint(6.5)))
 
-    val in1x6  = Seq(Seq(FixedPoint(1.0),FixedPoint(2.0),FixedPoint(3.0),FixedPoint(4.0),FixedPoint(5.0),FixedPoint(6.0)))
-    val out6x1 = Seq(Seq(FixedPoint(1.0)),
-                     Seq(FixedPoint(2.0)),
-                     Seq(FixedPoint(3.0)),
-                     Seq(FixedPoint(4.0)),
-                     Seq(FixedPoint(5.0)),
-                     Seq(FixedPoint(6.0)))
+    val in1x6  = Seq(Seq(FixedPoint(1.5),FixedPoint(2.5),FixedPoint(3.0),FixedPoint(4.0),FixedPoint(5.0),FixedPoint(6.0)))
+    
+    val out6x1 = Seq(Seq(FixedPoint(1.5)),
+                     Seq(FixedPoint(2.5)),
+                     Seq(FixedPoint(3.5)),
+                     Seq(FixedPoint(4.5)),
+                     Seq(FixedPoint(5.5)),
+                     Seq(FixedPoint(6.5)))
 }
 
 class MatrixTranposeModelTester extends AnyFlatSpec with ChiselScalatestTester {
@@ -55,31 +56,38 @@ class MatrixTranposeModelTester extends AnyFlatSpec with ChiselScalatestTester {
 
 class MatrixTranposeTester extends AnyFlatSpec with ChiselScalatestTester {
 
-  def doMatrixTransposeTest(a: Matrix, sat_num: Int = 4): Boolean = {
-    // wip
-    val p = GPSParams(sat_num)
+  def doMatrixTransposeTest(a: Matrix): Boolean = {
+    val p = GPSParams(mat_override = true, rows_override = a.size, cols_override = a(0).size)
     implicit val scale = p.scale
     val model = MatrixTransposeModel(a)
 
-    test(new MatrixTranspose(p, p.rows, p.cols)).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
-      dut.io.in.ready.poke(true.B)
+    test(new MatrixTranspose(p)).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      dut.io.in.valid.poke(true.B)
       for (r <- 0 until p.rows) {
         for (c <- 0 until p.cols) {
           dut.io.in.bits.a(r)(c).poke(p.fixedToChisel(a(r)(c)))
         }
       }
       
-      for (r <- 0 until p.rows) {
-        for (c <- 0 until p.cols) {
-          assert(dut.io.out.bits(r)(c).peek() == model(r)(c))
+      for (r <- 0 until model.size) {
+        for (c <- 0 until model(0).size) {
+          dut.io.out.bits(r)(c).expect(p.fixedToChisel(model(r)(c)))
         }
       }
+      dut.io.out.valid.expect(true.B)
     }
     true
   }
+
   behavior of "MatrixTranspose"
   it should "Tranpose Matrix of size 2x2" in {
-    assert(false)
+    doMatrixTransposeTest(MatrxiTransposeData.in2x2)
+  }
+  it should "Tranpose Matrix of size 2x3" in {
+    doMatrixTransposeTest(MatrxiTransposeData.in2x3)
+  }
+  it should "Tranpose Matrix of size 1x6" in {
+    doMatrixTransposeTest(MatrxiTransposeData.in1x6)
   }
 
 }
