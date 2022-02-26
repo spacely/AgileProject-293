@@ -20,13 +20,3 @@ class FixedToChiselModel(f: FixedPoint, p: GPSParams) extends Module {
     io.out := value
    
 }
-
-class BaseChiselModelIO() extends Bundle {
-    val out = Output(experimental.FixedPoint())
-}
-
-class BaseChiselModel(d: Double, p: GPSParams) extends Module {
-    val io = IO(new BaseChiselModelIO())
-    io.out := experimental.FixedPoint.fromDouble(d, p.width.W, p.bp.BP)
-   
-}
