@@ -78,8 +78,7 @@ class MatrixTranposeTester extends AnyFlatSpec with ChiselScalatestTester {
   }
   behavior of "MatrixTranspose"
   it should "Tranpose Matrix of size 2x2" in {
-    //assert(MatrixTranspose(MatrxiTransposeData.in2x2) == MatrxiTransposeData.out2x2)
-    1
+    0
   }
 
 }
