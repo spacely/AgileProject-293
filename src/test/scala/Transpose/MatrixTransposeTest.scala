@@ -56,6 +56,7 @@ class MatrixTranposeModelTester extends AnyFlatSpec with ChiselScalatestTester {
 class MatrixTranposeTester extends AnyFlatSpec with ChiselScalatestTester {
 
   def doMatrixTransposeTest(a: Matrix, sat_num: Int = 4): Boolean = {
+    // wip
     val p = GPSParams(sat_num)
     implicit val scale = p.scale
     val model = MatrixTransposeModel(a)
@@ -78,7 +79,7 @@ class MatrixTranposeTester extends AnyFlatSpec with ChiselScalatestTester {
   }
   behavior of "MatrixTranspose"
   it should "Tranpose Matrix of size 2x2" in {
-    0
+    assert(false)
   }
 
 }
