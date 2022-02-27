@@ -23,14 +23,14 @@ object MatrxiTransposeData {
     val out2x2 = Seq(Seq(FixedPoint(1.5),FixedPoint(3.5)),
                      Seq(FixedPoint(2.5),FixedPoint(4.5)))
 
-    val in2x3  = Seq(Seq(FixedPoint(1.5),FixedPoint(2.5),FixedPoint(3.0)),
-                     Seq(FixedPoint(3.5),FixedPoint(5.5),FixedPoint(6.0)))
+    val in2x3  = Seq(Seq(FixedPoint(1.5),FixedPoint(2.5),FixedPoint(3.5)),
+                     Seq(FixedPoint(3.5),FixedPoint(5.5),FixedPoint(6.5)))
 
     val out3x2 = Seq(Seq(FixedPoint(1.5),FixedPoint(3.5)),
                      Seq(FixedPoint(2.5),FixedPoint(5.5)),
                      Seq(FixedPoint(3.5),FixedPoint(6.5)))
 
-    val in1x6  = Seq(Seq(FixedPoint(1.5),FixedPoint(2.5),FixedPoint(3.0),FixedPoint(4.0),FixedPoint(5.0),FixedPoint(6.0)))
+    val in1x6  = Seq(Seq(FixedPoint(1.5),FixedPoint(2.5),FixedPoint(3.5),FixedPoint(4.5),FixedPoint(5.5),FixedPoint(6.5)))
     
     val out6x1 = Seq(Seq(FixedPoint(1.5)),
                      Seq(FixedPoint(2.5)),
@@ -40,21 +40,21 @@ object MatrxiTransposeData {
                      Seq(FixedPoint(6.5)))
 }
 
-class MatrixTranposeModelTester extends AnyFlatSpec with ChiselScalatestTester {
+class MatrixTransposeModelTester extends AnyFlatSpec with ChiselScalatestTester {
   behavior of "MatrixTransposeModel"
 
-  it should "Tranpose Matrix of size 2x2" in {
+  it should "Transpose Matrix of size 2x2" in {
     assert(MatrixTransposeModel(MatrxiTransposeData.in2x2) == MatrxiTransposeData.out2x2)
   }
-  it should "Tranpose Matrix of size 2x3" in {
+  it should "Transpose Matrix of size 2x3" in {
     assert(MatrixTransposeModel(MatrxiTransposeData.in2x3) == MatrxiTransposeData.out3x2)
   }
-    it should "Tranpose Matrix of size 1x6" in {
+    it should "Transpose Matrix of size 1x6" in {
     assert(MatrixTransposeModel(MatrxiTransposeData.in1x6) == MatrxiTransposeData.out6x1)
   }
 }
 
-class MatrixTranposeTester extends AnyFlatSpec with ChiselScalatestTester {
+class MatrixTransposeTester extends AnyFlatSpec with ChiselScalatestTester {
 
   def doMatrixTransposeTest(a: Matrix): Boolean = {
     val p = GPSParams(mat_override = true, rows_override = a.size, cols_override = a(0).size)
@@ -80,13 +80,13 @@ class MatrixTranposeTester extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   behavior of "MatrixTranspose"
-  it should "Tranpose Matrix of size 2x2" in {
+  it should "Transpose Matrix of size 2x2" in {
     doMatrixTransposeTest(MatrxiTransposeData.in2x2)
   }
-  it should "Tranpose Matrix of size 2x3" in {
+  it should "Transpose Matrix of size 2x3" in {
     doMatrixTransposeTest(MatrxiTransposeData.in2x3)
   }
-  it should "Tranpose Matrix of size 1x6" in {
+  it should "Transpose Matrix of size 1x6" in {
     doMatrixTransposeTest(MatrxiTransposeData.in1x6)
   }
 
