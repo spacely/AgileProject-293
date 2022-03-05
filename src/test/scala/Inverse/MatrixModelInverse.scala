@@ -67,7 +67,86 @@ class MatrixInverseModel(val p: GPSParams) {
         val x = Seq.tabulate(y.size, a.size ) {
             (i,j) => X(i)(j)
         }
-        append(genIdentity(2),x)
+        //append(genIdentity(2),x)
+        x
+    }
+
+    def cholesky(a: Matrix): Matrix = {
+        // based on C implemenation https://github.com/PetteriAimonen/libfixmatrix/blob/master/fixmatrix.c
+
+        var row, column, k = 0
+        val A = ArrayBuffer.fill(a.size)(ArrayBuffer.fill(a.size)(FixedPoint(0.0)))
+        
+        for (row <- 0 until a(0).size )
+        {
+            for (column <- 0 until a.size )
+            {
+                if (row == column)
+                {
+
+                    var value = a(row)(column)
+                    for (k <- 0 until column)
+                    {
+                        var Ljk = A(row)(k)
+                        Ljk = Ljk * Ljk
+                        value = value - Ljk
+                    }
+                    
+                    A(row)(column) = value.sqrt;
+                }
+                else if (row < column)
+                {
+                    A(row)(column) = FixedPoint(0)
+                    }
+                else
+                {
+                    var value = a(row)(column)
+                    for (k <- 0 until column)
+                    {
+                        var Lik = A(row)(k)
+                        var Ljk = A(column)(k)
+                        var product = Lik * Ljk
+                        value = value - product
+                    }
+                    var Ljj = A(column)(column)
+                    value = value / Ljj
+                    A(row)(column) = value
+                    }
+            }
+        }
+        val x = Seq.tabulate(A(0).size, A.size ) {
+            (i,j) => A(i)(j)
+        }
+        x
+        
+        
+    }
+
+    def choleskyWikipedia(a: Matrix): Matrix = {
+    // based on wikipedia psuedo code
+        val L = ArrayBuffer.fill(a.size)(ArrayBuffer.fill(a.size)(FixedPoint(0.0)))
+
+        for(i <- 0 until a.size) 
+        {
+            for (j <- 0 to i) 
+            {
+                var sum = FixedPoint(0);
+                for (k <- 0 until j)
+                {
+                    sum += L(i)(k) * L(j)(k);
+                }
+                if (i == j)
+                {
+                    L(i)(j) = sqrt(a(i)(i) - sum)
+                }
+                else
+                    L(i)(j) = (1.0 / L(j)(j) * (a(i)(j) - sum))
+            }
+        }
+        val x = Seq.tabulate(L(0).size, L.size ) {
+            (i,j) => L(i)(j)
+        }
+        x
     }
 
 }
