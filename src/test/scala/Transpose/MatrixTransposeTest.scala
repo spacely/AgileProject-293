@@ -13,7 +13,7 @@ import spire.math.extras.{FixedPoint, FixedScale}
 import gps.MatrixTransposeModel.Matrix
 
 
-object MatrxiTransposeData {
+object MatrixTransposeData {
     val p = GPSParams()
     implicit val scale = p.scale
 
@@ -44,13 +44,13 @@ class MatrixTransposeModelTester extends AnyFlatSpec with ChiselScalatestTester 
   behavior of "MatrixTransposeModel"
 
   it should "Transpose Matrix of size 2x2" in {
-    assert(MatrixTransposeModel(MatrxiTransposeData.in2x2) == MatrxiTransposeData.out2x2)
+    assert(MatrixTransposeModel(MatrixTransposeData.in2x2) == MatrixTransposeData.out2x2)
   }
   it should "Transpose Matrix of size 2x3" in {
-    assert(MatrixTransposeModel(MatrxiTransposeData.in2x3) == MatrxiTransposeData.out3x2)
+    assert(MatrixTransposeModel(MatrixTransposeData.in2x3) == MatrixTransposeData.out3x2)
   }
     it should "Transpose Matrix of size 1x6" in {
-    assert(MatrixTransposeModel(MatrxiTransposeData.in1x6) == MatrxiTransposeData.out6x1)
+    assert(MatrixTransposeModel(MatrixTransposeData.in1x6) == MatrixTransposeData.out6x1)
   }
 }
 
@@ -81,13 +81,13 @@ class MatrixTransposeTester extends AnyFlatSpec with ChiselScalatestTester {
 
   behavior of "MatrixTranspose"
   it should "Transpose Matrix of size 2x2" in {
-    doMatrixTransposeTest(MatrxiTransposeData.in2x2)
+    doMatrixTransposeTest(MatrixTransposeData.in2x2)
   }
   it should "Transpose Matrix of size 2x3" in {
-    doMatrixTransposeTest(MatrxiTransposeData.in2x3)
+    doMatrixTransposeTest(MatrixTransposeData.in2x3)
   }
   it should "Transpose Matrix of size 1x6" in {
-    doMatrixTransposeTest(MatrxiTransposeData.in1x6)
+    doMatrixTransposeTest(MatrixTransposeData.in1x6)
   }
 
 }
