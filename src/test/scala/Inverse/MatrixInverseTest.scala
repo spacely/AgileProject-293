@@ -1,6 +1,6 @@
 package gps
 import chisel3._
-import chiseltest.{ChiselScalatestTester, WriteVcdAnnotation, testableClock, testableFixedPoint}
+import chiseltest.{ChiselScalatestTester, WriteVcdAnnotation, testableClock, testableFixedPoint, testableSInt}
 import org.scalatest.flatspec.AnyFlatSpec
 
 import spire._
@@ -114,14 +114,33 @@ class MatrixInverseTester extends AnyFlatSpec with ChiselScalatestTester {
   }
 
   behavior of "MatrixInverse"
-  it should "Divide Fixed Points" in {
-    // assert(MatrixInverse.fixedDiv(MatrixInverseData.p, ))
+  it should "Divide Fixed Points 1/2 = 0.5" in {
     val p = GPSParams(width = 8, bp = 4)
 
     test(new MatrixDivide(p)).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
-      dut.io.a.poke(experimental.FixedPoint.fromDouble(1, p.width.W, p.bp.BP))
-      dut.io.b.poke(experimental.FixedPoint.fromDouble(6, p.width.W, p.bp.BP))
-      println(dut.io.z.peekDouble())
+      dut.io.a.poke(experimental.FixedPoint.fromDouble(1.0, p.width.W, p.bp.BP))
+      dut.io.b.poke(experimental.FixedPoint.fromDouble(2.0, p.width.W, p.bp.BP))
+      dut.io.z.expect(experimental.FixedPoint.fromDouble(0.5, p.width.W, p.bp.BP))
+    }
+    true
+  }
+  it should "Divide Fixed Points 1/4 = 0.25" in {
+    val p = GPSParams(width = 8, bp = 4)
+
+    test(new MatrixDivide(p)).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      dut.io.a.poke(experimental.FixedPoint.fromDouble(1.0, p.width.W, p.bp.BP))
+      dut.io.b.poke(experimental.FixedPoint.fromDouble(4.0, p.width.W, p.bp.BP))
+      dut.io.z.expect(experimental.FixedPoint.fromDouble(0.25, p.width.W, p.bp.BP))
+    }
+    true
+  }
+  it should "Divide Fixed Points 2/4 = 0.5" in {
+    val p = GPSParams(width = 8, bp = 4)
+
+    test(new MatrixDivide(p)).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      dut.io.a.poke(experimental.FixedPoint.fromDouble(2.0, p.width.W, p.bp.BP))
+      dut.io.b.poke(experimental.FixedPoint.fromDouble(4.0, p.width.W, p.bp.BP))
+      dut.io.z.expect(experimental.FixedPoint.fromDouble(0.5, p.width.W, p.bp.BP))
     }
     true
   }

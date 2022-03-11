@@ -57,7 +57,7 @@ class MatrixTransposeModelTester extends AnyFlatSpec with ChiselScalatestTester 
 class MatrixTransposeTester extends AnyFlatSpec with ChiselScalatestTester {
 
   def doMatrixTransposeTest(a: Matrix): Boolean = {
-    val p = GPSParams(mat_override = true, width = 8, bp = 4, rows_override = a.size, cols_override = a(0).size)
+    val p = GPSParams(mat_override = true, width = 12, bp = 4, rows_override = a.size, cols_override = a(0).size)
     implicit val scale = p.scale
     val model = MatrixTransposeModel(a)
 

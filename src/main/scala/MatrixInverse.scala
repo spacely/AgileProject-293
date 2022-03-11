@@ -13,10 +13,14 @@ object MatrixInverse {
   val idle :: divide :: compute  :: Nil= Enum(3)
 
   def fixedDiv(p: GPSParams, a: experimental.FixedPoint, b: experimental.FixedPoint): experimental.FixedPoint = {
-        val a_s = a.litValue
-        val b_s = b.litValue
+        val a_signed = a.asSInt
+        val b_signed = b.asSInt
         
-        val z = experimental.FixedPoint((a_s/b_s), p.width.W, p.bp.BP)
+        val zero = Wire(UInt(p.bp.W))
+        zero := 0.U
+        val a_signed_extend = Cat(a_signed, zero).asSInt
+        val z = (a_signed_extend/b_signed).asFixedPoint(p.bp.BP)
+
         z
     }
 }
@@ -27,21 +31,20 @@ class MatrixInverseIO(p: GPSParams) extends Bundle {
     }))
     val out = Decoupled(Vec(p.cols, Vec(p.rows, experimental.FixedPoint(p.width.W, p.bp.BP))))
     val state = Output(UInt(8.W))
-    //val counter = Output(UInt(8.W))
 }
 
 class MatrixDivideIO(p: GPSParams) extends Bundle {
     val a = Input(experimental.FixedPoint(p.width.W, p.bp.BP))
     val b = Input(experimental.FixedPoint(p.width.W, p.bp.BP))
     val z = Output(experimental.FixedPoint(p.width.W, p.bp.BP))
-
 }
 
 class MatrixDivide(p: GPSParams) extends Module {
     val io = IO(new MatrixDivideIO(p))
-    import MatrixInverse.fixedDiv
-    
+    import MatrixInverse.fixedDiv 
+
     io.z := fixedDiv(p, io.a, io.b)
+    
 }
 
 class MatrixInverse(p: GPSParams) extends Module {
