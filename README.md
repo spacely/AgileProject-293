@@ -29,17 +29,19 @@ Matrix ident generation Model
 
 Matrix ident generation Test
 
-
-## In Progress
 Mastrix Inversion Tests (FixedPoint)
 
-## To do
 Matrix Inversion Chisel (FixedPoint)
 
+Add completed Matrix Multiply from homework to project repo + convert it to FixedPoint
+## In Progress
+
+
+## To do
 
 Top level scala model
 
 Top level chisel
 
 
-Add completed Matrix Multiply from homework to project repo + convert it to FixedPoint
+
