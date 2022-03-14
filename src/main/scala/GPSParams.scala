@@ -11,13 +11,13 @@ import spire.math.extras.{FixedPoint, FixedScale}
 // FixedPoint refers to Spire fixed point (scala type)
 // experimental.FixedPoint refers to chisel type
 case class GPSParams(sat_num: Int = 4, width: Int = 16, bp: Int = 8, mat_override: Boolean = false, rows_override: Int = 0, cols_override: Int = 0) {
-  
   if(mat_override){
     require(rows_override > 0)
     require(cols_override > 0)
   }
   val rows: Int = if(mat_override) rows_override else sat_num
   val cols: Int = if(mat_override) cols_override else 4
+
   require(bp >= 1)
 
   val spire_bp: Int = 1 << bp

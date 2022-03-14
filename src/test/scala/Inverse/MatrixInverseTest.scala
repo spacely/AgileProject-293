@@ -1,6 +1,8 @@
 package gps
 import chisel3._
-import chiseltest.{ChiselScalatestTester, WriteVcdAnnotation, testableClock, testableFixedPoint, testableSInt}
+//import chiseltest.{ChiselScalatestTester, WriteVcdAnnotation, testableClock, testableFixedPoint, testableSInt, DecoupledDriver}
+import chiseltest.{iotesters, defaults, ChiselScalatestTester, WriteVcdAnnotation, testableFixedPoint, ValidDriver, DecoupledDriver, testableBool, testableClock}
+//import chiseltest._
 import org.scalatest.flatspec.AnyFlatSpec
 
 import spire._
@@ -19,10 +21,10 @@ object MatrixInverseData {
     val in2x2  = Seq(Seq(FixedPoint(1.5),FixedPoint(2.5)),
                      Seq(FixedPoint(3.5),FixedPoint(4.5)))
 
-    val in4x4  = Seq(Seq(FixedPoint(1.5),FixedPoint(2.5)),
-                     Seq(FixedPoint(1.5),FixedPoint(2.5)),
-                     Seq(FixedPoint(1.5),FixedPoint(2.5)),
-                     Seq(FixedPoint(3.5),FixedPoint(4.5)))
+    val in4x4  = Seq(Seq(FixedPoint(1.5),FixedPoint(2.5),FixedPoint(3.5),FixedPoint(4.5)),
+                     Seq(FixedPoint(1.5),FixedPoint(2.5),FixedPoint(3.5),FixedPoint(4.5)),
+                     Seq(FixedPoint(1.5),FixedPoint(2.5),FixedPoint(3.5),FixedPoint(4.5)),
+                     Seq(FixedPoint(3.5),FixedPoint(4.5),FixedPoint(3.5),FixedPoint(4.5)))
 
     val out2x4 = Seq(Seq(FixedPoint(1.5),FixedPoint(2.5),FixedPoint(1.0),FixedPoint(0.0)),
                      Seq(FixedPoint(3.5),FixedPoint(4.5),FixedPoint(0.0),FixedPoint(1.0)))
@@ -60,7 +62,7 @@ class MatrixInverseModelTester extends AnyFlatSpec with ChiselScalatestTester {
       }
       var total_error = 0.0 
       error.foreach(total_error += _)
-      println(total_error)
+      println("percent error: " + total_error)
       assert(total_error < 0.05)
       //assert((new MatrixInverseModel(MatrixInverseData.p).gaussElimination(MatrixInverseData.in2x2, new MatrixInverseModel(MatrixInverseData.p).genIdentity(2))== MatrixInverseData.outgauss2x2))
   }
@@ -75,8 +77,7 @@ class MatrixInverseModelTester extends AnyFlatSpec with ChiselScalatestTester {
       }
       var total_error = 0.0 
       error.foreach(total_error += _)
-      println(total_error)
-      assert(total_error < 0.1)
+      println("percent error: " + total_error)
       //assert((new MatrixInverseModel(MatrixInverseData.p).gaussElimination(MatrixInverseData.outgauss2x2, new MatrixInverseModel(MatrixInverseData.p).genIdentity(2))== MatrixInverseData.in2x2))
   }
   // it should("cholesky decomp") in {
@@ -89,29 +90,28 @@ class MatrixInverseModelTester extends AnyFlatSpec with ChiselScalatestTester {
 
 class MatrixInverseTester extends AnyFlatSpec with ChiselScalatestTester {
     def doMatrixInverseTest(a: Matrix): Boolean = {
-    val p = GPSParams(mat_override = true, width = 8, bp = 4, rows_override = a.size, cols_override = a(0).size)
+    val p = GPSParams(mat_override = true, width = 16, bp = 8, rows_override = a.size, cols_override = a(0).size)
     implicit val scale = p.scale
     val model = MatrixTransposeModel(a)
 
     test(new MatrixInverse(p)).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
-      // dut.io.in.valid.poke(true.B)
-      // for (r <- 0 until p.rows) {
-      //   for (c <- 0 until p.cols) {
-      //     dut.io.in.bits.a(r)(c).poke(p.fixedToChisel(a(r)(c)))
-      //   }
-      // }
-      
+      dut.io.in.valid.poke(true.B)
+      dut.io.in.ready.expect(true.B)
+      for (r <- 0 until p.rows) {
+        for (c <- 0 until p.cols) {
+          dut.io.in.bits.a(r)(c).poke(p.fixedToChisel(a(r)(c)))
+        }
+      }
+      dut.clock.step(100)
       // for (r <- 0 until model.size) {
       //   for (c <- 0 until model(0).size) {
       //     dut.io.out.bits(r)(c).expect(p.fixedToChisel(model(r)(c)))
       //   }
       // }
-      dut.io.in.valid(true.B)
-      dut.clock.step(100)
-
-    }
+      
+      }
     true
-  }
+    }
 
   behavior of "MatrixInverse"
   it should "Divide Fixed Points 1/2 = 0.5" in {
@@ -144,7 +144,10 @@ class MatrixInverseTester extends AnyFlatSpec with ChiselScalatestTester {
     }
     true
   }
-  // it should "Inverse Matrix of size 2x2" in {
-  //   doMatrixInverseTest(MatrixInverseData.in2x2)
-  // }
+  it should "Inverse Matrix of size 2x2" in {
+    doMatrixInverseTest(MatrixInverseData.in2x2)
+  }
+  it should "Inverse Matrix of size 4x4" in {
+    doMatrixInverseTest(MatrixInverseData.in4x4)
+  }
 }

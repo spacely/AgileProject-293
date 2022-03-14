@@ -13,8 +13,6 @@ class MatrixtransposeIO(p: GPSParams) extends Bundle {
         val a = Vec(p.rows, Vec(p.cols, experimental.FixedPoint(p.width.W, p.bp.BP)))
     }))
     val out = Decoupled(Vec(p.cols, Vec(p.rows, experimental.FixedPoint(p.width.W, p.bp.BP))))
-    //val state = Output(UInt(8.W))
-    //val counter = Output(UInt(8.W))
 }
 
 class MatrixTranspose(p: GPSParams) extends Module {

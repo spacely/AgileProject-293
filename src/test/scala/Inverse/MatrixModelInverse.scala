@@ -23,7 +23,6 @@ class MatrixInverseModel(val p: GPSParams) {
     }
     def gaussElimination(a: Matrix, y: Matrix): Matrix = {
         // based on: https://github.com/mazurkiewiczp/GaussS/blob/master/gauss.scala
-        // TODO: current off by 1 error in output
         val A = ArrayBuffer.fill(a.size)(ArrayBuffer.fill(a.size)(FixedPoint(0.0)))
         for (i <- 0 until a.size) {
             for (j <- 0 until a.size) {
